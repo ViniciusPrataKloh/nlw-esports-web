@@ -1,11 +1,24 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import * as CheckBox from "@radix-ui/react-checkbox";
+import * as Select from "@radix-ui/react-select";
+import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
 import { Check, GameController } from "phosphor-react";
 import { Input } from "./form/Input";
 
+interface Game {
+    id: string;
+    name: string;
+    imageUrl: string;
+    _count: {
+        Ad: number
+    };
+}
 
+interface Props {
+    data: Game[];
+}
 
-export function Modal() {
+export function Modal({ data }: Props) {
     return (
         <Dialog.DialogPortal>
             <Dialog.DialogOverlay className="justify-center bg-black/60 inset-0 fixed" />
@@ -17,8 +30,36 @@ export function Modal() {
                     {/* Game */}
                     <div className="flex flex-col gap-2">
                         <label htmlFor="game" className="font-semibold">Qual o game?</label> <br />
-                        <Input id="game" type="text" placeholder="Selecione o game que deseja jogar"
-                        />
+                        <Select.Root>
+                            <Select.Trigger className="flex flex-row justify-between bg-zinc-900 py-3 px-4 rounded ">
+
+                                <Select.Value placeholder="Selecione o game que deseja jogar" className="text-sm placeholder:text-zinc-500" />
+                                <Select.Icon>
+                                    <ChevronDownIcon />
+                                </Select.Icon>
+
+                                <Select.Content className="fixed bg-zinc-900 text-zinc-300 px-10 py-8 top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[480px] shadow-2xl shadow-black/25">
+                                    <Select.ScrollUpButton>
+                                        <ChevronUpIcon />
+                                    </Select.ScrollUpButton>
+                                    <Select.Viewport>
+                                        <Select.Group>
+                                            {data.map(game => {
+                                                return (
+                                                    <Select.Item value={game.name}>
+                                                        <Select.ItemText>{game.name}</Select.ItemText>
+                                                        <Select.ItemIndicator>
+                                                            <CheckIcon />
+                                                        </Select.ItemIndicator>
+                                                    </Select.Item>
+                                                );
+                                            })}
+                                        </Select.Group>
+                                    </Select.Viewport>
+                                </Select.Content>
+
+                            </Select.Trigger>
+                        </Select.Root>
                     </div>
 
                     {/* Name or Nickname */}

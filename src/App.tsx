@@ -22,6 +22,7 @@ export default function App() {
 
   const [games, setGames] = useState<Game[]>([]);
 
+
   useEffect(() => {
     fetch("http://localhost:3333/games/initialGames")
       .then(response => response.json())
@@ -55,7 +56,7 @@ export default function App() {
 
       <Dialog.Root>
         <CreateAdBanner />
-        <Modal />
+        <Modal data={games} />
       </Dialog.Root>
 
     </div>
