@@ -1,9 +1,12 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import * as CheckBox from "@radix-ui/react-checkbox";
 import * as Select from "@radix-ui/react-select";
+import * as ToggleGroup from '@radix-ui/react-toggle-group';
+
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
 import { Check, GameController } from "phosphor-react";
 import { Input } from "./form/Input";
+import { useState } from "react";
 
 interface Game {
     id: string;
@@ -19,6 +22,8 @@ interface Props {
 }
 
 export function Modal({ data }: Props) {
+    const [weekDays, setWeekDays] = useState<string[]>([]);
+
     return (
         <Dialog.DialogPortal>
             <Dialog.DialogOverlay className="justify-center bg-black/60 inset-0 fixed" />
@@ -38,7 +43,7 @@ export function Modal({ data }: Props) {
                                     <ChevronDownIcon />
                                 </Select.Icon>
 
-                                <Select.Content className="fixed bg-zinc-900 text-zinc-300 px-10 py-8 top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[480px] shadow-2xl shadow-black/25">
+                                <Select.Content className="fixed bg-zinc-900/95 text-zinc-300 px-10 py-8 top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[400px] shadow-2xl shadow-black/25">
                                     <Select.ScrollUpButton>
                                         <ChevronUpIcon />
                                     </Select.ScrollUpButton>
@@ -46,11 +51,11 @@ export function Modal({ data }: Props) {
                                         <Select.Group>
                                             {data.map(game => {
                                                 return (
-                                                    <Select.Item value={game.name}>
+                                                    <Select.Item key={game.id} value={game.name}>
                                                         <Select.ItemText>{game.name}</Select.ItemText>
-                                                        <Select.ItemIndicator>
+                                                        {/* <Select.ItemIndicator>
                                                             <CheckIcon />
-                                                        </Select.ItemIndicator>
+                                                        </Select.ItemIndicator> */}
                                                     </Select.Item>
                                                 );
                                             })}
@@ -84,15 +89,19 @@ export function Modal({ data }: Props) {
                     <div className="flex gap-6">
                         <div className="flex flex-col gap-2">
                             <label htmlFor="weekDays" className="font-semibold">Quando costuma jogar?</label>
-                            <div className="grid grid-cols-4 gap-1">
-                                <button title="Domingo" className="w-10 h-10 bg-zinc-900 rounded">D</button>
-                                <button title="Segunda" className="w-10 h-10 bg-zinc-900 rounded">S</button>
-                                <button title="Terça" className="w-10 h-10 bg-zinc-900 rounded">T</button>
-                                <button title="Quarta" className="w-10 h-10 bg-zinc-900 rounded">Q</button>
-                                <button title="Quinta" className="w-10 h-10 bg-zinc-900 rounded">Q</button>
-                                <button title="Sexta" className="w-10 h-10 bg-zinc-900 rounded">S</button>
-                                <button title="Sábado" className="w-10 h-10 bg-zinc-900 rounded">S</button>
-                            </div>
+                            <ToggleGroup.Root
+                                type="multiple"
+                                className="grid grid-cols-4 gap-1"
+                                value={weekDays}
+                                onValueChange={setWeekDays}>
+                                <ToggleGroup.Item value="0" title="Domingo" className={`w-10 h-10  rounded ${weekDays.includes('0') ? 'bg-violet-500' : 'bg-zinc-900'}`}>D</ToggleGroup.Item>
+                                <ToggleGroup.Item value="1" title="Segunda" className={`w-10 h-10 rounded ${weekDays.includes('1') ? 'bg-violet-500' : 'bg-zinc-900'}`}>S</ToggleGroup.Item>
+                                <ToggleGroup.Item value="2" title="Terça" className={`w-10 h-10 rounded ${weekDays.includes('2') ? 'bg-violet-500' : 'bg-zinc-900'}`}>T</ToggleGroup.Item>
+                                <ToggleGroup.Item value="3" title="Quarta" className={`w-10 h-10 rounded ${weekDays.includes('3') ? 'bg-violet-500' : 'bg-zinc-900'}`}>Q</ToggleGroup.Item>
+                                <ToggleGroup.Item value="4" title="Quinta" className={`w-10 h-10 rounded ${weekDays.includes('4') ? 'bg-violet-500' : 'bg-zinc-900'}`}>Q</ToggleGroup.Item>
+                                <ToggleGroup.Item value="5" title="Sexta" className={`w-10 h-10 rounded ${weekDays.includes('5') ? 'bg-violet-500' : 'bg-zinc-900'}`}>S</ToggleGroup.Item>
+                                <ToggleGroup.Item value="6" title="Sábado" className={`w-10 h-10 rounded ${weekDays.includes('6') ? 'bg-violet-500' : 'bg-zinc-900'}`}>S</ToggleGroup.Item>
+                            </ToggleGroup.Root>
                         </div>
 
                         <div className="flex flex-col gap-2 flex-1">
@@ -105,14 +114,14 @@ export function Modal({ data }: Props) {
                     </div>
 
                     {/* Checkbox */}
-                    <div className="flex items-center gap-2 mt-2 text-sm">
+                    <label className="flex items-center gap-2 mt-2 text-sm">
                         <CheckBox.Root className="flex items-center justify-center w-6 h-6 rounded bg-zinc-900">
                             <CheckBox.Indicator>
                                 <Check className="w-4 h-4 text-emerald-400" />
                             </CheckBox.Indicator>
                         </CheckBox.Root>
                         Costumo me conectar ao chat de voz
-                    </div>
+                    </label>
 
                     <footer className="flex justify-end gap-4 mt-4">
                         <Dialog.Close className="bg-zinc-500 px-5 h-12 rounded-md font-semibold hover:bg-zinc-600">
