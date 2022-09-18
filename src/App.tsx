@@ -118,9 +118,9 @@ export default function App() {
               </div>
 
               <footer className="flex justify-end gap-4 mt-4">
-                <button className="bg-zinc-500 px-5 h-12 rounded-md font-semibold hover:bg-zinc-600">
+                <Dialog.Close className="bg-zinc-500 px-5 h-12 rounded-md font-semibold hover:bg-zinc-600">
                   Cancelar
-                </button>
+                </Dialog.Close>
                 <button className="flex items-center gap-3 bg-violet-500 px-5 h-12 rounded-md font-semibold hover:bg-violet-600" type="submit">
                   <GameController size={24} />
                   Encontrar duo
