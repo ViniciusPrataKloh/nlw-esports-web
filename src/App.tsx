@@ -1,13 +1,12 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { GameController } from "phosphor-react";
 import { useEffect, useState } from "react";
 import { GameCard } from "./components/GameCard";
 
+import axios from "axios";
 import logoImage from "./assets/logo-nlw.svg";
 import { CreateAdBanner } from "./components/CreateAdBanner";
-import { Input } from "./components/form/Input";
-import './styles/main.css';
 import { Modal } from "./components/Modal";
+import './styles/main.css';
 
 interface Game {
   id: string;
@@ -22,12 +21,10 @@ export default function App() {
 
   const [games, setGames] = useState<Game[]>([]);
 
-
   useEffect(() => {
-    fetch("http://localhost:3333/games/initialGames")
-      .then(response => response.json())
-      .then(data => {
-        setGames(data);
+    axios("http://localhost:3333/games/initialGames")
+      .then(response => {
+        setGames(response.data);
       })
   }, []);
 

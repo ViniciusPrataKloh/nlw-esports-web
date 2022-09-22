@@ -1,12 +1,13 @@
-import * as Dialog from "@radix-ui/react-dialog";
 import * as CheckBox from "@radix-ui/react-checkbox";
+import * as Dialog from "@radix-ui/react-dialog";
 import * as Select from "@radix-ui/react-select";
 import * as ToggleGroup from '@radix-ui/react-toggle-group';
 
-import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
+import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
+import axios from "axios";
 import { Check, GameController } from "phosphor-react";
+import { FormEvent, useState } from "react";
 import { Input } from "./form/Input";
-import { useState } from "react";
 
 interface Game {
     id: string;
@@ -23,6 +24,40 @@ interface Props {
 
 export function Modal({ data }: Props) {
     const [weekDays, setWeekDays] = useState<string[]>([]);
+    const [selectedGame, setSelectedGame] = useState<string>('');
+    const [voiceChannel, setVoiceChannel] = useState<boolean>(false);
+
+    // useEffect(() => {
+    //     axios("http://localhost:3333/games/initialGames")
+    //         .then(response => {
+    //             setSelectedGame(response.data);
+    //         })
+    // }, []);
+
+    async function handleFormSubmit(event: FormEvent) {
+        event.preventDefault();
+
+        const formData = new FormData(event.target as HTMLFormElement);
+        const data = Object.fromEntries(formData);
+
+        try {
+            await axios.post(`http://localhost:3333/games/${selectedGame}/ads`, {
+                gameId: selectedGame,
+                name: data.name,
+                yearsPlaying: Number(data.yearsPlaying),
+                discord: data.discord,
+                weekDays: weekDays.map(Number),
+                hoursStart: "20:00", //data.hoursStart,
+                hoursEnd: "24:00", //data.hoursEnd
+                useVoiceChannel: voiceChannel
+            });
+
+            alert("Anúncio criado com sucesso!");
+        } catch (error) {
+            console.log(error);
+            alert("Erro ao criar o anúncio!");
+        }
+    }
 
     return (
         <Dialog.DialogPortal>
@@ -31,11 +66,12 @@ export function Modal({ data }: Props) {
             <Dialog.DialogContent className="fixed bg-[#2A2636] text-white px-10 py-8 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[480px] shadow-lg shadow-black/25">
                 <Dialog.DialogTitle className="text-[32px] font-black">Publique um anúncio</Dialog.DialogTitle>
 
-                <form className="flex flex-col gap-4 mt-8">
+                <form onSubmit={handleFormSubmit} className="flex flex-col gap-4 mt-8">
                     {/* Game */}
                     <div className="flex flex-col gap-2">
                         <label htmlFor="game" className="font-semibold">Qual o game?</label> <br />
-                        <Select.Root>
+                        <Select.Root
+                            onValueChange={setSelectedGame}>
                             <Select.Trigger className="flex flex-row justify-between bg-zinc-900 py-3 px-4 rounded ">
 
                                 <Select.Value placeholder="Selecione o game que deseja jogar" className="text-sm placeholder:text-zinc-500" />
@@ -51,11 +87,8 @@ export function Modal({ data }: Props) {
                                         <Select.Group>
                                             {data.map(game => {
                                                 return (
-                                                    <Select.Item key={game.id} value={game.name}>
+                                                    <Select.Item key={game.id} value={game.id} placeholder={game.name}>
                                                         <Select.ItemText>{game.name}</Select.ItemText>
-                                                        {/* <Select.ItemIndicator>
-                                                            <CheckIcon />
-                                                        </Select.ItemIndicator> */}
                                                     </Select.Item>
                                                 );
                                             })}
@@ -70,18 +103,18 @@ export function Modal({ data }: Props) {
                     {/* Name or Nickname */}
                     <div className="flex flex-col gap-2">
                         <label htmlFor="name" className="font-semibold">Seu nome (ou nickname)</label> <br />
-                        <Input id="name" type="text" placeholder="Como te chamam dentro do game?" />
+                        <Input name="name" id="name" type="text" placeholder="Como te chamam dentro do game?" />
                     </div>
 
                     {/* YearsPlaying and Discord */}
                     <div className="grid grid-cols-2 gap-6">
                         <div className="flex flex-col gap-2">
                             <label htmlFor="yearsPlaying" className="font-semibold">Joga há quantos anos?</label> <br />
-                            <Input id="yearsPlaying" type="text" placeholder="Tudo bem ser ZERO" />
+                            <Input name="yearsPlaying" id="yearsPlaying" type="text" placeholder="Tudo bem ser ZERO" />
                         </div>
                         <div className="flex flex-col gap-2">
                             <label htmlFor="discord" className="font-semibold">Qual seu Discord?</label> <br />
-                            <Input id="discord" type="text" placeholder="Usuário#0000" />
+                            <Input name="discord" id="discord" type="text" placeholder="Usuário#0000" />
                         </div>
                     </div>
 
@@ -107,15 +140,23 @@ export function Modal({ data }: Props) {
                         <div className="flex flex-col gap-2 flex-1">
                             <label htmlFor="hour" className="font-semibold">Qual horário do dia?</label>
                             <div className="grid grid-cols-2 gap-2">
-                                <Input id="hoursStart" className="font-semibold" type="time" placeholder="De" />
-                                <Input id="hoursEnd" className="font-semibold" type="time" placeholder="Até" />
+                                <Input name="hoursStart" id="hoursStart" className="font-semibold" type="time" placeholder="De" />
+                                <Input name="hoursEnd" id="hoursEnd" className="font-semibold" type="time" placeholder="Até" />
                             </div>
                         </div>
                     </div>
 
                     {/* Checkbox */}
                     <label className="flex items-center gap-2 mt-2 text-sm">
-                        <CheckBox.Root className="flex items-center justify-center w-6 h-6 rounded bg-zinc-900">
+                        <CheckBox.Root
+                            onCheckedChange={(checked) => {
+                                if (checked)
+                                    setVoiceChannel(true);
+                                else
+                                    setVoiceChannel(false);
+                            }}
+                            className="flex items-center justify-center w-6 h-6 rounded bg-zinc-900"
+                        >
                             <CheckBox.Indicator>
                                 <Check className="w-4 h-4 text-emerald-400" />
                             </CheckBox.Indicator>
@@ -136,6 +177,6 @@ export function Modal({ data }: Props) {
                 </form>
 
             </Dialog.DialogContent>
-        </Dialog.DialogPortal>
+        </Dialog.DialogPortal >
     );
 }
