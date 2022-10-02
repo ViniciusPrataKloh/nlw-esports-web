@@ -6,7 +6,7 @@
 
 ##  Projeto
 
-O projeto está sendo desenvolvido em ReactJS durante a Next Level Week #9 eSports da Rocketseat.
+O projeto desenvolvido em ReactJS durante a Next Level Week #9 eSports da Rocketseat.
 
 ## ✨ Tecnologias
 
